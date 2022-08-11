@@ -1,0 +1,23 @@
+{% block body %}
+<span class="rating">
+    {% for i in 1..5 %}
+        {% if i <= rating %}
+            <i class="fas fa-star" style='color: #f3da35'></i>
+        {% else %}
+            <i class="far fa-star"></i>
+        {% endif %}
+    {% endfor %}
+<span>
+{% endblock %}
+{# 
+<span class="rating">
+    {% for i in 1..5 %}
+        {% if i <= comment.rating %}
+            <i class="fas fa-star"></i>
+        {% else %}
+            <i class="far fa-star"></i>
+
+        {% endif %}
+    {% endfor %}
+
+<span> #}

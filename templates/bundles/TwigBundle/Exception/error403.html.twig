@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Vous n'avez pas le droit d'accéder à cette ressource {% endblock %}
+{% block body %}
+    <div class="container">
+        <h1> Alors? tu fais le malin</h1>
+        <p>Mieux vaut retourner à la page d'accueil</p>
+        <a href="{{path('ads_show')}}" class="btn btn-primary">Retour à l'accueil</a>
+        
+    </div>
+
+{% endblock %}

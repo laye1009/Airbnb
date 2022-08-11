@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réserver l'annonce:{{ad.title}}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"/>
+{% endblock %}
+
+{% block body %}
+    {% if ad_booking | length > 0 %}
+        <div class="col-12 text-center font-weight-bolder mt-5">Cette annonce n'est pas disponible pour les date suivantes: </div>
+        {% for book in ad_booking %}
+            {% if book.a_startDate > date() %}
+                <div class="row bg-gradient bg-info ml-5 mr-5" style="height:2%;">
+                    <div class="col-4">
+                        <p class="font-weight-bolder">Du {{ book.a_startDate | date('d-m-Y') }}  au {{ book.a_endDate | date('d-m-Y') }}</p>
+                    </div>
+                </div>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+    <div class="container">
+        <h1 class="mt-5"> Réserver l'annonce: {{ad.title}}</h1>
+        <p> Vous êtes sur le point de réserver le bien de <strong>{{ad.author.fullName}}</strong> dites nous tout</p>
+        {{form_start(form)}}
+        <div class="alert alert-light">
+            
+            <div class="row">
+                <div id="dispo" available = "{{ notAvailable }}" style="color:red;"></div>
+                <div class="col-12"><h2> Commencez par nous dire quelles sont vos dates</h2></div>
+                <div class="col-4">
+                    {{form_row(form.startDate)}}
+                </div>
+                <div class="col-4">
+                    {{form_row(form.endDate)}}
+                </div>
+                <div class="col-4"></div>
+            </div>
+            <div id="bad_date" style="color:red;"></div>
+            <h4> Montant total du séjour est <span id="amount" price="{{ad.price}}"><span id="tot">0</span>&euro;</span>  </h4>
+            <span id="days">0</span> nuits à {{ad.price}} / nuit
+
+            <h2>Avez quelque chose à rajouter?</h2>
+            <div>
+                {{form_row(form.comment)}}
+            </div>
+           
+        </div>
+
+        <h2> Vous avez terminé!</h2>
+        <p> Bonnes vacances de rêve!</p>
+        <button type="submit" class="btn btn-success"> Je reserve</button>
+        {{form_end(form)}}
+        
+    </div>
+
+{% endblock %}
+{#lancement de datepicker#}
+{% block javascripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.fr.min.js" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function(){
+            /*$('#booking_startDate,#booking_endDate').datepicker({
+                format:'dd/mm/yyyy',
+                datesDisabled:[
+                    {% for day in ad.notAvailableDays %}
+                        "{{day.format('d/m/Y')}}",
+                    {% endfor %}
+                ],
+                startDate=new Date()
+            });*/
+
+            $('#booking_endDate,#booking_startDate').on('change',calculateAmount);
+
+            function calculateAmount(){
+                const endDate=new Date($('#booking_endDate').val().replace(/(\d+)\/(\d+)\/(\d{4})/,'$3-$2-$1'));
+                const startDate=new Date($('#booking_startDate').val().replace(/(\d+)\/(\d+)\/(\d{4})/,'$3-$2-$1'));
+                let price = $('#amount').attr('price');
+
+                if(startDate && endDate && startDate < endDate){
+                    $('#bad_date').text('');
+                    const day_time=24*60*60*1000;
+
+                    const interval=endDate.getTime()-startDate.getTime();
+                    const days=interval/day_time;
+                    const amount=days * price;
+
+                    $('#days').text(days);
+                    //$('#amount').text(amount.toLocalString('fr-Fr'));
+                    let euro = "&euro;";
+                    $('#tot').text(amount);
+                }
+
+                if($("#booking_endDate").val() && $('#booking_startDate').val() && startDate > endDate)
+                {
+                    $('#bad_date').text('la date de fin doit être inférieure à la date de début');
+
+                }
+
+                // Gestion disponibilité
+
+                start_d = new Date($('#booking_startDate').val()).toLocaleDateString('fr');
+                end_d = new Date($('#booking_endDate').val()).toLocaleDateString('fr');
+                if($("#booking_endDate").val() && $('#booking_startDate').val() && start_d < end_d)
+                {
+                    $('#dispo').text('');
+                    availableDates = $('#dispo').attr('available');
+                    avail_array = availableDates.split('|');
+                    if(avail_array.indexOf(start_d)!=-1 || avail_array.indexOf(end_d)!=-1)
+                    {
+                        $('#dispo').text('Cette annonce n\'est pas disponible entre '+start_d+' et '+end_d);
+                    }
+                    //calculateAmount();
+                }
+            }
+                
+        });
+    
+
+    </script>
+{% endblock %}
+
+

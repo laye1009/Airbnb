@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+{% block title %} Edition d'une annonce {% endblock %}
+
+{% form_themes form 'ad/_collection.html.twig' %}
+
+{% block body %}
+    {{form_start(form)}}
+        
+        {{form_widget(form)}}
+        <button type="submit" class="btn btn-primary">Créer la nouvelle annonce</button>
+    {{form_end(form)}}
+{% endblock %}
+
+
+
+
+{% block javascripts %}
+<script>
+    $('#add-image').click(function(){
+        //const index=+$('#ad_images div.form-group').length;
+        const index=$('#widgets-counter').val();
+        //je récupère les prototypes des entrées
+        const tmpl=$('#ad_images').data('prototype').replace(/__name__/g,index);
+        //console.log(tmpl);
+        $('#ad_images').append(tmpl);
+        $('#widgets-counter').val(index+1);
+        // je gère le boutton supprimer
+        handleDelete();
+    });
+
+    function handleDelete(){
+        $('button[data-action="delete"]').click(function(){
+            const target=this.dataset.target;
+            console.log(target);
+        })
+    }
+function updateCounter()
+{
+    const count=+$('#ad_images div.form-group').length;
+    $('#widgets-counter').val(count);
+}
+    updateCounter();
+
+    handleDelete();
+</script>
+{% endblock %}

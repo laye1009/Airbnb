@@ -1,0 +1,28 @@
+body {
+    background-color: lightgray;
+}
+/* possibilité dans sass css
+.avater {
+    max-width: 128px;
+
+    &.avatar-medium {
+        max-height:64px;
+    }
+
+    &.avatar-mini {
+    }
+}
+
+.alert {
+    a{
+
+    }
+
+    h1,p {
+        
+    }
+    .btn{
+
+    }
+}
+*/
