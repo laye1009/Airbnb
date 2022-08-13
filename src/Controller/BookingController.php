@@ -77,12 +77,19 @@ class BookingController extends AbstractController
                 }
         }
         //var_dump($notAvailableFormatted);die();
-        if(!$this->getUser())
+        $user_id = $this->getUser()->getId();
+        if(!$user_id)
         {
             $this->addFlash(
                 'warning',
                 'Veuillez vous connecter, SVP.'
             );
+            return $this->redirectToRoute("ad_show",['slug'=>$ad->getSlug()]);
+        }
+        $ifUserBooked = $repo->findIfUserBooked($user_id, $ad->getId());
+        if($ifUserBooked)
+        {
+            $this->addFlash('warning','Vous avez déjà réservé ce bien. Veuillez regarder vos réservations.');
             return $this->redirectToRoute("ad_show",['slug'=>$ad->getSlug()]);
         }
 

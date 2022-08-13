@@ -9,10 +9,10 @@
     {% if ad_booking | length > 0 %}
         <div class="col-12 text-center font-weight-bolder mt-5">Cette annonce n'est pas disponible pour les date suivantes: </div>
         {% for book in ad_booking %}
-            {% if book.a_startDate > date() %}
+            {% if book.a_endDate > date() %}
                 <div class="row bg-gradient bg-info ml-5 mr-5" style="height:2%;">
                     <div class="col-4">
-                        <p class="font-weight-bolder">Du {{ book.a_startDate | date('d-m-Y') }}  au {{ book.a_endDate | date('d-m-Y') }}</p>
+                        <p class="badge badge-warning font-weight-bolder">Du {{ book.a_startDate | date('d-m-Y') }}  au {{ book.a_endDate | date('d-m-Y') }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -26,7 +26,7 @@
         <div class="alert alert-light">
             
             <div class="row">
-                <div id="dispo" available = "{{ notAvailable }}" style="color:red;"></div>
+
                 <div class="col-12"><h2> Commencez par nous dire quelles sont vos dates</h2></div>
                 <div class="col-4">
                     {{form_row(form.startDate)}}
@@ -36,6 +36,7 @@
                 </div>
                 <div class="col-4"></div>
             </div>
+            <div id="dispo" available = "{{ notAvailable }}" style="color:red;"></div>
             <div id="bad_date" style="color:red;"></div>
             <h4> Montant total du séjour est <span id="amount" price="{{ad.price}}"><span id="tot">0</span>&euro;</span>  </h4>
             <span id="days">0</span> nuits à {{ad.price}} / nuit
@@ -72,51 +73,57 @@
 
             $('#booking_endDate,#booking_startDate').on('change',calculateAmount);
 
-            function calculateAmount(){
-                const endDate=new Date($('#booking_endDate').val().replace(/(\d+)\/(\d+)\/(\d{4})/,'$3-$2-$1'));
-                const startDate=new Date($('#booking_startDate').val().replace(/(\d+)\/(\d+)\/(\d{4})/,'$3-$2-$1'));
+            function calculateAmount() {
+                error = 0;
+                const endDate = new Date($('#booking_endDate').val().replace(/(\d+)\/(\d+)\/(\d{4})/, '$3-$2-$1'));
+                const startDate = new Date($('#booking_startDate').val().replace(/(\d+)\/(\d+)\/(\d{4})/, '$3-$2-$1'));
                 let price = $('#amount').attr('price');
+                $('#dispo').text('');
+                $('#bad_date').text('');
 
-                if(startDate && endDate && startDate < endDate){
+                if ($("#booking_endDate").val() && $('#booking_startDate').val() && startDate > endDate) {
+                    error = 1;
+                    $('#bad_date').text('la date de fin doit être inférieure à la date de début');
+                }
+                // bad date de debut
+                if ($("#booking_startDate").val() <= new Date()) {
+                    error = 1;
+                    $('#bad_date').text('la date de début doit être supérieure ou égale à aujourd\'hui.');
+                }
+
+                // Gestion disponibilité
+                start_d = new Date($('#booking_startDate').val()).toLocaleDateString('fr');
+                end_d = new Date($('#booking_endDate').val()).toLocaleDateString('fr');
+                if (start_d && end_d && start_d < end_d) {
+                    availableDates = $('#dispo').attr('available');
+                    avail_array = availableDates.split('|');
+                    start_d = start_d.replace(/[ \/ ]/g,"-");
+                    end_d = end_d.replace(/[ \/ ]/g,"-");
+                    if (start_d && avail_array.indexOf(start_d) != -1) {
+                        error = 1;
+                        $('#dispo').text('Cette annonce n\'est pas disponible cette date. Verifier les dates de disponibilité plus haut.');
+                    }
+                    if (end_d && avail_array.indexOf(end_d) != -1) {
+                        error = 1;
+                        $('#dispo').text('Cette annonce n\'est pas disponible cette date. Verifier les dates de disponibilité plus haut.');
+                    }
+                }
+
+                if (startDate && endDate && startDate < endDate && error == 0) {
                     $('#bad_date').text('');
-                    const day_time=24*60*60*1000;
+                    const day_time = 24 * 60 * 60 * 1000;
 
-                    const interval=endDate.getTime()-startDate.getTime();
-                    const days=interval/day_time;
-                    const amount=days * price;
+                    const interval = endDate.getTime() - startDate.getTime();
+                    const days = interval / day_time;
+                    const amount = days * price;
 
                     $('#days').text(days);
                     //$('#amount').text(amount.toLocalString('fr-Fr'));
                     let euro = "&euro;";
                     $('#tot').text(amount);
                 }
-
-                if($("#booking_endDate").val() && $('#booking_startDate').val() && startDate > endDate)
-                {
-                    $('#bad_date').text('la date de fin doit être inférieure à la date de début');
-
-                }
-
-                // Gestion disponibilité
-
-                start_d = new Date($('#booking_startDate').val()).toLocaleDateString('fr');
-                end_d = new Date($('#booking_endDate').val()).toLocaleDateString('fr');
-                if($("#booking_endDate").val() && $('#booking_startDate').val() && start_d < end_d)
-                {
-                    $('#dispo').text('');
-                    availableDates = $('#dispo').attr('available');
-                    avail_array = availableDates.split('|');
-                    if(avail_array.indexOf(start_d)!=-1 || avail_array.indexOf(end_d)!=-1)
-                    {
-                        $('#dispo').text('Cette annonce n\'est pas disponible entre '+start_d+' et '+end_d);
-                    }
-                    //calculateAmount();
-                }
             }
-                
         });
-    
-
     </script>
 {% endblock %}
 

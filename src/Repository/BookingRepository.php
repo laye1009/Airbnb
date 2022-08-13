@@ -31,14 +31,24 @@ class BookingRepository extends ServiceEntityRepository
 
     public function findUserBookings($value)
     {
-        {
-            return $this->createQueryBuilder('a')
-                ->Where('a.ad = :val')
-                ->setParameter('val', $value)
-                ->getQuery()
-                ->getScalarResult()
+        return $this->createQueryBuilder('a')
+            ->Where('a.ad = :val')
+            ->setParameter('val', $value)
+            ->getQuery()
+            ->getScalarResult()
+        ;
+    }
+
+    public function findIfUserBooked($booker,$ad)
+    {
+        return $this->createQueryBuilder('a')
+            ->Where('a.booker = :booker')
+            ->andWhere('a.ad = :ad')
+            ->setParameter('booker', $booker)
+            ->setParameter('ad', $ad)
+            ->getQuery()
+            ->getScalarResult()
             ;
-        }
     }
 
     // /**

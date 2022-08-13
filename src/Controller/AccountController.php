@@ -7,6 +7,7 @@ use App\Form\AccountType;
 use App\Entity\PasswordUpdate;
 use App\Form\RegistrationType;
 use App\Form\PasswordUpdateType;
+use App\Repository\AdRepository;
 use App\Repository\BookingRepository;
 use Symfony\Component\Form\FormError;
 use Doctrine\Persistence\ObjectManager;
@@ -162,15 +163,18 @@ class AccountController extends AbstractController
          * @Route("/account/bookings",name="account_bookings")
          * @return response
          */
-
-         public function bookings(BookingRepository $repo){
+         public function bookings(AdRepository $ad_repo, BookingRepository $repo){
             $user = $this->getUser();
             //var_dump($user->getBookings()['bookings']);die();
-            $bookings = $user->getBookings()['bookings'];
-            $id = $user->getId();
-            $bookings = $repo->findUserBookings($id);
+            $bookings = $repo->findByBooker(['booker_id'=>$user->getId()]);
+            $ads = [];
+            foreach ($bookings as $book)
+            {
+                $ads[] = $ad_repo->findById(['id' => $book->getAd()->getId()])[0];
+            }
              return $this->render('booking/book_list.html.twig',[
-                'bookings' => $bookings
+                'bookings' => $bookings,
+                 'ads' => $ads
              ]);
          }
 }

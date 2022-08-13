@@ -17,7 +17,7 @@
                         <a href="{{path('user_show',{'slug':author.slug})}}">{{author.fullName}}</a>
                     </strong> pour l'annonce
                     <strong>
-                        <a href="{{path("ads_show",{'slug':ad.slug})}}">{{ad.title}}</a>
+                        <a href="{{path("ad_show",{'slug':ad.slug})}}">{{ad.title}}</a>
                     </strong> a été prise en compte
 
                 </p>
@@ -45,7 +45,7 @@
                     </dl>
 
                     <div class="row">
-                        <h2> Votre Hôte</h2>
+                        <h2 class="col-12"> Votre Hôte</h2>
                         <div clas="col-3">
                             <img src="{{author.picture}}" class="avatar avatar-medium">
                         </div>
@@ -59,16 +59,13 @@
                 </div>
 
                 <div class="alert alert-light">
-                    <h2  class="alert-heading"> Votre avis compte (après séjour) </h2>
-                    {% if date() > date(booking.endDate %}
-                        {% set comment= booking.ad.commentFromUser(app.user) %}
+                    <h2  class="alert-heading"> Votre avis </h2>
+                    {% if date() > date(booking.endDate) %}
+                        {% set comment= booking.comment %}
                         {% if comment is not null %}
                             <blockquote>
-                                {{comment.content}}
+                                {{comment}}
                             </blockquote>
-                            <strong> Note: </strong>
-                            
-                            {% include 'shared/rating.html.twig'%}#}
 
                         {% else %}
                             {{form_start(form)}}
@@ -82,12 +79,12 @@
                 </div>
             </div>
 
-            <div class="col">
+            <div class="col-sm-4">
                 <div class="alert alert-light">
                     <h2 class="alert-heading"> Votre Hébergement</h2>
                     </h2>
                     <h4>
-                        <a href= "{{path('ads_show',{'slug':ad.slug})}}">{{ad.title}}</a>
+                        <a href= "{{path('ad_show',{'slug':ad.slug})}}">{{ad.title}}</a>
                     </h4>
                 </div>
             </div>
