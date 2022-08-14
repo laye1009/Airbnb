@@ -102,9 +102,10 @@ class AppFixtures extends Fixture
                 $manager->persist($image);
             }
             //Gestion des réservations
-            for($j=1; $j<=mt_rand(0,10); $j++){
+
+            for($j=1; $j<=mt_rand(5,15); $j++){
                 $booking=new Booking();
-                $createdAt=$faker->dateTimeBetween('-6 months');
+                $createdAt=$faker->dateTimeBetween('-6 months','-3 months');
                 $startDate=$faker->dateTimeBetween('-3 months');
                 $duration=mt_rand(3,10);
                 $endDate=(clone $startDate)->modify("+$duration days");

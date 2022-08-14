@@ -25,4 +25,3 @@ vendor/
 .idea/
 .env
 var/data.db
-node_modules/
