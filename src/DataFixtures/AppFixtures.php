@@ -56,9 +56,11 @@ class AppFixtures extends Fixture
                 ->setLastName($faker->lastname)
                 ->setEmail($faker->email)
                 ->setPicture($picture)
+                ->setHash($hash)
                 ->setIntroduction($faker->sentence())
                 ->setDescription('<p>'.join('<p></p>',$faker->paragraphs(3)).'</p>')
-                ->setHash($hash);
+                ->addUserRole($adminRole)
+            ;
             $manager->persist($user);
             $users[]=$user;
         }
