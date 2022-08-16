@@ -17,10 +17,13 @@
 
 ###> symfony/webpack-encore-bundle ###
 /node_modules/
-/public/build/
 npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
 vendor/
 .idea/
 var/data.db
+asset/
+package.json
+package-lock.json
+public/build/
